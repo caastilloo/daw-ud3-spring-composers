@@ -1,4 +1,4 @@
-target/
-uploadDir/
-data/
+/target/
+/uploadDir/
+/data/
 *.log
