@@ -1,0 +1,47 @@
+body {
+    background: #f5f1ea;
+}
+
+header {
+    background: linear-gradient(135deg, #2b2118, #5a4332);
+}
+
+.composer-card-img {
+    height: 220px;
+    object-fit: cover;
+    object-position: top;
+}
+
+.composer-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+}
+
+.card-hover {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Errores de validacion: el contenedor del campo recibe cssError cuando hay un error */
+.cssError {
+    color: #b02a37;
+}
+
+div.cssError input,
+div.cssError select,
+div.cssError textarea {
+    border-color: #dc3545;
+    background-color: #fdecee;
+}
+
+span.cssError {
+    display: block;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}

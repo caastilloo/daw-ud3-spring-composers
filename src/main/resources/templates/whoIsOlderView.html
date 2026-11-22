@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Quién es mayor')}"></th:block>
+</head>
+<body>
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4">
+        <h2>Resultado</h2>
+
+        <div class="alert alert-success" th:if="${older != null}">
+            <strong th:text="${older.name}">X</strong> es mayor que <strong th:text="${younger.name}">Y</strong>
+            (nació el <span th:text="${#temporals.format(older.birthDate, 'dd/MM/yyyy')}">01/01/1800</span>
+            frente al <span th:text="${#temporals.format(younger.birthDate, 'dd/MM/yyyy')}">01/01/1900</span>).
+        </div>
+        <div class="alert alert-info" th:if="${sameComposer != null}">
+            Has elegido dos veces a <strong th:text="${first.name}">X</strong>. Elige dos compositores distintos.
+        </div>
+        <div class="alert alert-info" th:if="${sameBirthDate != null}">
+            <strong th:text="${first.name}">X</strong> y <strong th:text="${second.name}">Y</strong> nacieron el mismo día.
+        </div>
+
+        <a class="btn btn-outline-secondary" th:href="@{/composerCompare}">Comparar otros compositores</a>
+    </main>
+</body>
+</html>

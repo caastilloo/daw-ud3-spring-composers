@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Buscar obra')}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1">
+        <h2 class="mb-3">Buscar obra</h2>
+
+        <!-- Formulario GET: el navegador construye /searchMusicalPiece?title=... -->
+        <form th:action="@{/searchMusicalPiece}" method="get" class="card shadow-sm card-body mb-4">
+            <label for="title" class="form-label">Parte del título o expresión regular</label>
+            <div class="input-group">
+                <input id="title" name="title" type="text" class="form-control" th:value="${title}"
+                       placeholder="sonata, ^sinf, claro de luna..." required>
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+            <div class="form-text">No distingue mayúsculas ni tildes y también busca en los títulos alternativos.</div>
+        </form>
+
+        <th:block th:if="${pieces != null}">
+            <p class="text-muted">
+                <strong th:text="${pieces.size()}">0</strong> obras encontradas para
+                "<strong th:text="${title}">texto</strong>".
+            </p>
+            <div class="alert alert-warning" th:if="${pieces.isEmpty()}">No hay ninguna obra que coincida.</div>
+
+            <div class="table-responsive" th:unless="${pieces.isEmpty()}">
+                <table class="table table-striped bg-white shadow-sm align-middle">
+                    <thead>
+                        <tr><th>Compositor</th><th>Obra</th><th>Instrumentación</th><th>Enlace</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="piece : ${pieces}">
+                            <td><a th:href="@{/composer(name=${piece.composer})}" th:text="${piece.composer}">Compositor</a></td>
+                            <td>
+                                <span th:text="${piece.title}">Obra</span>
+                                <small class="d-block text-muted" th:if="${!piece.alternativeTitles.isEmpty()}"
+                                       th:text="${#strings.listJoin(piece.alternativeTitles, ' / ')}">Otros títulos</small>
+                            </td>
+                            <td th:text="${piece.instrumentation.label}">Piano</td>
+                            <td><a th:href="${piece.url}" target="_blank" rel="noopener">Escuchar</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </th:block>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+</body>
+</html>

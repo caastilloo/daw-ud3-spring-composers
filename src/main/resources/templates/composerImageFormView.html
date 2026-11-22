@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Añadir imagen')}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1" style="max-width: 760px;">
+        <h2 class="mb-3">Añadir imagen a <span th:text="${composer.name}">Compositor</span></h2>
+        <!-- enctype multipart/form-data: el formulario envia un fichero -->
+        <form method="post" enctype="multipart/form-data" th:action="@{/composer/image/{name}/submit(name=${composer.name})}"
+              class="card shadow-sm card-body">
+            <label for="file" class="form-label">Imagen (máximo 256 KB)</label>
+            <input type="file" id="file" name="file" class="form-control" accept="image/*" required>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Subir imagen</button>
+                <a class="btn btn-outline-secondary" th:href="@{/composer(name=${composer.name})}">Cancelar</a>
+            </div>
+        </form>
+
+        <h3 class="h6 text-muted mt-4" th:if="${!composer.photos.isEmpty()}">Imágenes actuales</h3>
+        <div class="d-flex flex-wrap gap-2">
+            <img th:each="photo : ${composer.photos}" th:src="@{${photo}}" width="96px" class="rounded shadow-sm" alt="">
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+</body>
+</html>

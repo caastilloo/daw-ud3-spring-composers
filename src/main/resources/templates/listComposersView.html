@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Resultados')}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1">
+        <h2>Resultados de la búsqueda</h2>
+        <p class="text-muted">
+            Nombre: <strong th:text="${name.isBlank()} ? 'cualquiera' : ${name}">cualquiera</strong> -
+            Nacionalidad: <strong th:text="${nationality.isBlank()} ? 'todas' : ${nationality}">todas</strong>
+            <span class="badge text-bg-secondary" th:if="${alive}">solo vivos</span>
+            <span class="badge text-bg-secondary" th:if="${manyPieces}">más de 3 obras</span>
+            - ordenados por fecha de nacimiento
+        </p>
+
+        <div th:if="${composers.isEmpty()}" class="alert alert-warning">
+            No hay compositores que cumplan las condiciones.
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 g-3 mb-3" th:unless="${composers.isEmpty()}">
+            <div class="col" th:each="composer : ${composers}">
+                <div class="card shadow-sm h-100">
+                    <div class="row g-0 h-100">
+                        <div class="col-4">
+                            <img class="composer-thumb rounded-start" th:if="${!composer.photos.isEmpty()}"
+                                 th:src="@{${composer.photos.get(0)}}" th:alt="${composer.name}">
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body">
+                                <h3 class="h5 card-title">
+                                    <a th:href="@{/composer(name=${composer.name})}" th:text="${composer.name}">Compositor</a>
+                                </h3>
+                                <p class="mb-1 text-muted" th:text="${composer.nationality}">Nacionalidad</p>
+                                <p class="mb-0 small">
+                                    Nació el <span th:text="${#temporals.format(composer.birthDate, 'dd/MM/yyyy')}">01/01/1800</span>
+                                    <span class="badge text-bg-success" th:if="${composer.alive}">vivo</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a class="btn btn-outline-secondary" th:href="@{/searchComposer}">Nueva búsqueda</a>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+</body>
+</html>

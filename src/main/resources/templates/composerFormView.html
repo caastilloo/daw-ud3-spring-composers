@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Compositor')}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1" style="max-width: 760px;">
+        <h2 class="mb-3" th:text="${mode == 'edit'} ? 'Editar compositor' : 'Añadir compositor'">Compositor</h2>
+        <!-- Error que llega por la URL despues del redirect (se enseña arriba en rojo) -->
+        <div th:if="${txtErr != null}">
+            <p class="alert alert-danger" role="alert" th:text="${txtErr}">error</p>
+        </div>
+        <div class="alert alert-info" th:if="${pendingPiece != null}">
+            Estás registrando a <strong th:text="${pendingPiece.composer}">Compositor</strong> para poder guardar su obra
+            <strong th:text="${pendingPiece.title}">Obra</strong>. Al guardar el compositor se guardará también la obra.
+        </div>
+        <div class="alert alert-danger" th:if="${formError != null}" th:text="${formError}">Error</div>
+        <div class="alert alert-danger" th:if="${#fields.hasErrors('${composer}')}">
+            Hay errores en el formulario. Revisa los campos marcados en rojo.
+        </div>
+
+        <!-- La misma vista sirve para añadir y editar: el modo cambia la URL de destino -->
+        <!-- enctype multipart/form-data para poder enviar la imagen junto al resto de campos -->
+        <form action="#" method="post" th:action="@{/composer/{mode}/submit(mode=${mode})}" th:object="${composer}"
+              enctype="multipart/form-data" class="card shadow-sm card-body">
+            <!-- En la edicion el nombre original viaja en un campo oculto, porque la clave tambien se puede cambiar -->
+            <input type="hidden" name="originalName" th:if="${mode == 'edit'}" th:value="${originalName}">
+
+            <div class="row g-3">
+                <div class="col-md-6" th:classappend="${#fields.hasErrors('name')} ? 'cssError'">
+                    <label for="name" class="form-label">Nombre artístico (clave)</label>
+                    <input type="text" id="name" class="form-control" th:field="*{name}" placeholder="Liszt">
+                    <span class="cssError" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</span>
+                </div>
+                <div class="col-md-6" th:classappend="${#fields.hasErrors('realName')} ? 'cssError'">
+                    <label for="realName" class="form-label">Nombre real</label>
+                    <input type="text" id="realName" class="form-control" th:field="*{realName}" placeholder="Franz Liszt">
+                    <span class="cssError" th:if="${#fields.hasErrors('realName')}" th:errors="*{realName}">Error</span>
+                </div>
+                <div class="col-12 mt-0" th:classappend="${#fields.hasErrors('someNameFilled')} ? 'cssError'">
+                    <div class="form-text">Si dejas uno de los dos vacíos, se copia el otro.</div>
+                    <span class="cssError" th:if="${#fields.hasErrors('someNameFilled')}" th:errors="*{someNameFilled}">Error</span>
+                </div>
+                <div class="col-12" th:classappend="${#fields.hasErrors('biography')} ? 'cssError'">
+                    <label for="biography" class="form-label">Biografía</label>
+                    <textarea id="biography" rows="4" class="form-control" th:field="*{biography}"></textarea>
+                    <span class="cssError" th:if="${#fields.hasErrors('biography')}" th:errors="*{biography}">Error</span>
+                </div>
+                <div class="col-md-6" th:classappend="${#fields.hasErrors('birthDate')} ? 'cssError'">
+                    <label for="birthDate" class="form-label">Fecha de nacimiento</label>
+                    <input type="date" id="birthDate" class="form-control" th:field="*{birthDate}">
+                    <span class="cssError" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}">Error</span>
+                </div>
+                <div class="col-md-6" th:classappend="${#fields.hasErrors('deathDate') or #fields.hasErrors('deathAfterBirth')} ? 'cssError'">
+                    <label for="deathDate" class="form-label">Fecha de fallecimiento (vacío si sigue vivo)</label>
+                    <input type="date" id="deathDate" class="form-control" th:field="*{deathDate}">
+                    <span class="cssError" th:if="${#fields.hasErrors('deathDate')}" th:errors="*{deathDate}">Error</span>
+                    <span class="cssError" th:if="${#fields.hasErrors('deathAfterBirth')}" th:errors="*{deathAfterBirth}">Error</span>
+                </div>
+                <div class="col-md-4" th:classappend="${#fields.hasErrors('nationality')} ? 'cssError'">
+                    <label for="nationality" class="form-label">Nacionalidad</label>
+                    <input type="text" id="nationality" class="form-control" th:field="*{nationality}">
+                    <span class="cssError" th:if="${#fields.hasErrors('nationality')}" th:errors="*{nationality}">Error</span>
+                </div>
+                <div class="col-md-4" th:classappend="${#fields.hasErrors('birthPlace')} ? 'cssError'">
+                    <label for="birthPlace" class="form-label">Lugar de nacimiento</label>
+                    <input type="text" id="birthPlace" class="form-control" th:field="*{birthPlace}">
+                    <span class="cssError" th:if="${#fields.hasErrors('birthPlace')}" th:errors="*{birthPlace}">Error</span>
+                </div>
+                <div class="col-md-4" th:classappend="${#fields.hasErrors('deathPlace')} ? 'cssError'">
+                    <label for="deathPlace" class="form-label">Lugar de fallecimiento</label>
+                    <input type="text" id="deathPlace" class="form-control" th:field="*{deathPlace}">
+                    <span class="cssError" th:if="${#fields.hasErrors('deathPlace')}" th:errors="*{deathPlace}">Error</span>
+                </div>
+                <!-- Solo al editar: imagen nueva opcional. Si se elige, se avisa a los suscriptores con ella adjunta -->
+                <div class="col-12" th:if="${mode == 'edit'}">
+                    <label for="file" class="form-label">Añadir una imagen nueva (opcional, máximo 256 KB)</label>
+                    <input type="file" id="file" name="file" class="form-control" accept="image/*">
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary" th:text="${mode == 'edit'} ? 'Guardar cambios' : 'Guardar compositor'">Guardar</button>
+                <a class="btn btn-outline-secondary" th:href="@{/}">Cancelar</a>
+            </div>
+        </form>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+</body>
+</html>

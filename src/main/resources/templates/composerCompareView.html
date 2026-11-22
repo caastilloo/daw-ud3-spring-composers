@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Comparar compositores')}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1" style="max-width: 700px;">
+        <h2>Comparar compositores</h2>
+        <p>Elige dos compositores para saber cuál nació antes.</p>
+
+        <!-- Formulario GET: envia /whoIsOlder?first=...&second=... -->
+        <form th:action="@{/whoIsOlder}" method="get" class="card shadow-sm card-body">
+            <div class="mb-3">
+                <label for="first" class="form-label">Primer compositor</label>
+                <select id="first" name="first" class="form-select" required>
+                    <option value="">Selecciona un compositor</option>
+                    <option th:each="composer : ${composers}" th:value="${composer.name}" th:text="${composer.name}">Compositor</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="second" class="form-label">Segundo compositor</label>
+                <select id="second" name="second" class="form-select" required>
+                    <option value="">Selecciona un compositor</option>
+                    <option th:each="composer : ${composers}" th:value="${composer.name}" th:text="${composer.name}">Compositor</option>
+                </select>
+            </div>
+            <div><button type="submit" class="btn btn-primary">Comparar</button></div>
+        </form>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+</body>
+</html>

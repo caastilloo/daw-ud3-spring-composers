@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Error 404')}"></th:block>
+</head>
+<body>
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-5 text-center">
+        <h2 class="display-4">404</h2>
+        <p class="lead">La página que buscas no existe.</p>
+        <a class="btn btn-primary" th:href="@{/}">Volver al inicio</a>
+    </main>
+</body>
+</html>

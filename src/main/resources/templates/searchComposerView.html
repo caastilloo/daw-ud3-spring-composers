@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Buscar compositor')}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1">
+        <h2 class="mb-4">Buscar compositor</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h3 class="h5 card-title">Por nombre (parcial)</h3>
+                        <!-- Formulario GET: el navegador construye /composers?name=... -->
+                        <form th:action="@{/composers}" method="get">
+                            <label for="composerName" class="form-label">Parte del nombre o expresión regular</label>
+                            <input id="composerName" name="name" type="text" class="form-control"
+                                   placeholder="Franz, schu, ^Wolf..." required>
+                            <div class="form-text mb-3">No distingue mayúsculas ni tildes y busca en el nombre artístico y en el real.</div>
+                            <button type="submit" class="btn btn-primary">Buscar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h3 class="h5 card-title">Por nacionalidad y condiciones</h3>
+                        <form th:action="@{/composers}" method="get">
+                            <label for="nationality" class="form-label">Nacionalidad (vacío = todas)</label>
+                            <input id="nationality" name="nationality" type="text" class="form-control mb-3" placeholder="Austriaco" list="nationalities">
+                            <datalist id="nationalities">
+                                <option th:each="nat : ${@composerService.nationalities}" th:value="${nat}"></option>
+                            </datalist>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="alive" value="true" id="alive">
+                                <label class="form-check-label" for="alive">Solo compositores vivos</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="manyPieces" value="true" id="manyPieces">
+                                <label class="form-check-label" for="manyPieces">Solo con más de 3 obras registradas</label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Buscar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+</body>
+</html>

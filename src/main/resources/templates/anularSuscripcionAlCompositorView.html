@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Anular suscripción')}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1" style="max-width: 760px;">
+        <h2 class="mb-3">Anular suscripción</h2>
+        <div th:if="${done == null}" class="card shadow-sm card-body">
+            <p><strong th:text="${subscriber.username}">usuario</strong> (<span th:text="${subscriber.email}">email</span>),
+                estás suscrito a <strong th:text="${subscriber.composer}">compositor</strong>.</p>
+            <!-- El boton envia un POST que borra la linea del .csv -->
+            <form method="post" th:action="@{/unsubscribe/{id}(id=${subscriber.id})}">
+                <button type="submit" class="btn btn-danger">Anular suscripción</button>
+            </form>
+        </div>
+        <div th:if="${done != null}">
+            <p class="alert alert-success">Has anulado tu suscripción a <strong th:text="${subscriber.composer}">compositor</strong>.
+                Ya no recibirás más emails.</p>
+            <a class="btn btn-primary" th:href="@{/}">Volver al inicio</a>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+</body>
+</html>

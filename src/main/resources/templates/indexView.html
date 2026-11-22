@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Inicio')}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1">
+        <div class="p-4 mb-4 bg-white rounded shadow-sm">
+            <h2>Bienvenido</h2>
+            <p class="lead mb-3">
+                Año actual: <strong th:text="${#temporals.year(#temporals.createNow())}">2026</strong>.
+                Compositores registrados: <strong th:text="${@composerService.composers.size()}">4</strong>.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary" th:href="@{/searchComposer}">Buscar un compositor</a>
+                <a class="btn btn-outline-primary" th:href="@{/composerCompare}">Comparar dos compositores</a>
+                <a class="btn btn-success" th:href="@{/composer/add}">Añadir compositor</a>
+                <a class="btn btn-success" th:href="@{/piece/add}">Añadir obra</a>
+            </div>
+        </div>
+
+        <h3 class="h5">Compositores por nacionalidad</h3>
+        <p>
+            <span class="badge text-bg-secondary me-1" th:each="group : ${@composerService.groupByNationality()}"
+                  th:text="${group.key} + ': ' + ${group.value.size()}">Austriaco: 2</span>
+        </p>
+
+        <h3 class="h5">Compositores registrados</h3>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            <div class="col" th:each="composer : ${@composerService.composersSortedByName}">
+                <a class="text-decoration-none text-dark" th:href="@{/composer(name=${composer.name})}">
+                    <div class="card shadow-sm h-100 card-hover">
+                        <img class="card-img-top composer-card-img" th:if="${!composer.photos.isEmpty()}"
+                             th:src="@{${composer.photos.get(0)}}" th:alt="${composer.name}">
+                        <div class="card-body">
+                            <h4 class="h6 card-title mb-0" th:text="${composer.name}">Compositor</h4>
+                            <small class="text-muted" th:text="${composer.nationality}">Nacionalidad</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+</body>
+</html>

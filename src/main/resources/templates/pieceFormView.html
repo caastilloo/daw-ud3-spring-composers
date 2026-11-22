@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Obra')}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1" style="max-width: 760px;">
+        <h2 class="mb-3" th:text="${mode == 'edit'} ? 'Editar obra' : 'Añadir obra'">Obra</h2>
+        <!-- Error que llega por la URL despues del redirect (se enseña arriba en rojo) -->
+        <div th:if="${txtErr != null}">
+            <p class="alert alert-danger" role="alert" th:text="${txtErr}">error</p>
+        </div>
+        <div class="alert alert-danger" th:if="${formError != null}" th:text="${formError}">Error</div>
+        <div class="alert alert-danger" th:if="${#fields.hasErrors('${musicalPiece}')}">
+            Hay errores en el formulario. Revisa los campos marcados en rojo.
+        </div>
+
+        <form action="#" method="post" th:action="@{/piece/{mode}/submit(mode=${mode})}" th:object="${musicalPiece}"
+              class="card shadow-sm card-body">
+            <!-- En la edicion, el id de la obra original viaja en un campo oculto -->
+            <input type="hidden" th:if="${mode == 'edit'}" th:field="*{id}">
+
+            <div class="row g-3">
+                <div class="col-12" th:classappend="${#fields.hasErrors('title')} ? 'cssError'">
+                    <label for="title" class="form-label">Título</label>
+                    <input type="text" id="title" class="form-control" th:field="*{title}">
+                    <span class="cssError" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Error</span>
+                </div>
+
+                <!-- Desplegable con los compositores ya registrados (viene del @ModelAttribute del controlador) -->
+                <div class="col-md-8" th:classappend="${#fields.hasErrors('composer') and newComposer != true} ? 'cssError'">
+                    <label for="composer" class="form-label">Compositor</label>
+                    <select id="composer" class="form-select" th:field="*{composer}">
+                        <option value="">Selecciona un compositor</option>
+                        <option th:each="c : ${composers}" th:value="${c.name}" th:text="${c.name}">Compositor</option>
+                    </select>
+                    <span class="cssError" th:if="${#fields.hasErrors('composer') and newComposer != true}" th:errors="*{composer}">Error</span>
+
+                    <!-- Extension: compositor no registrado. Solo en el formulario de añadir -->
+                    <div class="mt-2" th:if="${mode == 'add'}">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="newComposer" name="newComposer" value="true"
+                                   th:checked="${newComposer}">
+                            <label class="form-check-label" for="newComposer">El compositor no está registrado</label>
+                        </div>
+                        <input type="text" id="newComposerName" name="newComposerName" class="form-control mt-1"
+                               placeholder="Nombre del compositor no registrado" th:value="${newComposerName}">
+                    </div>
+                </div>
+                <div class="col-md-4" th:classappend="${#fields.hasErrors('year')} ? 'cssError'">
+                    <label for="year" class="form-label">Año</label>
+                    <input type="number" id="year" class="form-control" th:field="*{year}">
+                    <span class="cssError" th:if="${#fields.hasErrors('year')}" th:errors="*{year}">Error</span>
+                </div>
+
+                <!-- Un radio button por cada valor del enumerado -->
+                <div class="col-12" th:classappend="${#fields.hasErrors('instrumentation')} ? 'cssError'">
+                    <span class="form-label d-block">Instrumentación</span>
+                    <div class="form-check form-check-inline"
+                         th:each="inst : ${T(com.example.composers.models.Instrumentation).values()}">
+                        <input type="radio" class="form-check-input" th:id="${'inst-' + inst}"
+                               th:value="${inst}" th:field="*{instrumentation}">
+                        <label class="form-check-label" th:for="${'inst-' + inst}" th:text="${inst.label}">Piano</label>
+                    </div>
+                    <span class="cssError d-block" th:if="${#fields.hasErrors('instrumentation')}" th:errors="*{instrumentation}">Error</span>
+                </div>
+
+                <div class="col-12" th:classappend="${#fields.hasErrors('url')} ? 'cssError'">
+                    <label for="url" class="form-label">Enlace para escucharla</label>
+                    <input type="text" id="url" class="form-control" th:field="*{url}" placeholder="https://www.youtube.com/...">
+                    <span class="cssError" th:if="${#fields.hasErrors('url')}" th:errors="*{url}">Error</span>
+                </div>
+                <div class="col-12">
+                    <label for="alternativeTitlesText" class="form-label">Títulos alternativos (uno por línea)</label>
+                    <textarea id="alternativeTitlesText" rows="3" class="form-control" th:field="*{alternativeTitlesText}"></textarea>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary" th:text="${mode == 'edit'} ? 'Guardar cambios' : 'Guardar obra'">Guardar</button>
+                <a class="btn btn-outline-secondary" th:href="@{/}">Cancelar</a>
+            </div>
+        </form>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+
+    <!-- Con la casilla marcada se escribe el nombre y no se puede elegir de la lista; sin marcar, al reves -->
+    <script th:if="${mode == 'add'}">
+        const check = document.getElementById('newComposer');
+        const select = document.getElementById('composer');
+        const text = document.getElementById('newComposerName');
+        function toggleComposer() {
+            select.disabled = check.checked;
+            text.disabled = !check.checked;
+        }
+        check.addEventListener('change', toggleComposer);
+        toggleComposer();
+    </script>
+</body>
+</html>

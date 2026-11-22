@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent('Todas las obras')}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1">
+        <h2>Todas las obras</h2>
+        <p class="text-muted">
+            <strong th:text="${pieces.size()}">0</strong> obras registradas, ordenadas por título.
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-striped bg-white shadow-sm align-middle">
+                <thead>
+                    <tr><th>Compositor</th><th>Obra</th><th>Instrumentación</th><th>Enlace</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:each="piece : ${pieces}">
+                        <td><a th:href="@{/composer(name=${piece.composer})}" th:text="${piece.composer}">Compositor</a></td>
+                        <td th:text="${piece.title}">Obra</td>
+                        <td th:text="${piece.instrumentation.label}">Piano</td>
+                        <td><a th:href="${piece.url}" target="_blank" rel="noopener">Escuchar</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+</body>
+</html>

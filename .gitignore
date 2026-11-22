@@ -1,0 +1,4 @@
+target/
+uploadDir/
+data/
+*.log

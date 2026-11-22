@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/headFragment :: headContent(${composer.name})}"></th:block>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/menuFragment :: header}"></div>
+
+    <main class="container py-4 flex-grow-1">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div id="photos" class="carousel slide shadow-sm rounded overflow-hidden" th:if="${!composer.photos.isEmpty()}">
+                    <div class="carousel-inner">
+                        <div class="carousel-item" th:each="photo, iter : ${composer.photos}"
+                             th:classappend="${iter.first} ? 'active'">
+                            <img class="d-block w-100" th:src="@{${photo}}" th:alt="${composer.name}">
+                        </div>
+                    </div>
+                    <th:block th:if="${composer.photos.size() > 1}">
+                        <button class="carousel-control-prev" type="button" data-bs-target="#photos" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#photos" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    </th:block>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <h2 th:text="${composer.name}">Compositor</h2>
+                <p class="text-muted mb-1" th:if="${composer.realName != composer.name}" th:text="'Nombre real: ' + ${composer.realName}">Nombre real</p>
+                <span class="badge text-bg-primary" th:text="${composer.nationality}">Nacionalidad</span>
+                <span class="badge text-bg-success" th:if="${composer.alive}">Vivo</span>
+                <p class="mt-3" th:text="${composer.biography}">Biografía</p>
+                <div class="alert alert-success" th:if="${subscribed}">Te has suscrito a este compositor. Te avisaremos por email cuando cambie su perfil.</div>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <a class="btn btn-sm btn-outline-primary" th:href="@{/composer/edit/{name}(name=${composer.name})}">Editar compositor</a>
+                    <a class="btn btn-sm btn-outline-primary" th:href="@{/composer/image/{name}(name=${composer.name})}">Añadir imagen</a>
+                    <a class="btn btn-sm btn-success" th:href="@{/composer/subscribe/{name}(name=${composer.name})}">Suscribirse</a>
+                    <!-- Borrar modifica datos, asi que va en un formulario POST con confirmacion -->
+                    <form method="post" th:action="@{/composer/delete/{name}(name=${composer.name})}"
+                          th:attr="onsubmit=|return confirm('¿Eliminar a ${composer.name} y todas sus obras?')|">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar compositor</button>
+                    </form>
+                </div>
+
+                <ul class="list-group mb-3">
+                    <li class="list-group-item"><strong>Nacimiento:</strong>
+                        <span th:text="${#temporals.format(composer.birthDate, 'dd/MM/yyyy')}">01/03/1810</span>
+                        en <span th:text="${composer.birthPlace}">Lugar</span></li>
+                    <li class="list-group-item" th:if="${composer.deathDate != null}"><strong>Fallecimiento:</strong>
+                        <span th:text="${#temporals.format(composer.deathDate, 'dd/MM/yyyy')}">17/10/1849</span>
+                        en <span th:text="${composer.deathPlace}">Lugar</span></li>
+                    <li class="list-group-item" th:unless="${composer.deathDate != null}"><strong>Fallecimiento:</strong> sigue vivo</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3 class="h5 mt-4">Obras registradas</h3>
+        <!-- Se recorre el enumerado para mostrar los grupos siempre en el mismo orden -->
+        <th:block th:each="inst : ${T(com.example.composers.models.Instrumentation).values()}">
+            <div class="mb-3" th:if="${piecesByInstrumentation.containsKey(inst)}">
+                <h4 class="h6 text-muted" th:text="${inst.label}">Piano</h4>
+                <div class="list-group">
+                    <div class="list-group-item d-flex justify-content-between align-items-center"
+                         th:each="piece : ${piecesByInstrumentation.get(inst)}">
+                        <a class="text-decoration-none text-dark" th:href="${piece.url}" target="_blank" rel="noopener">
+                            <span th:text="${piece.title}">Obra</span>
+                            <small class="d-block text-muted" th:if="${!piece.alternativeTitles.isEmpty()}"
+                                   th:text="'También conocida como: ' + ${#strings.listJoin(piece.alternativeTitles, ' / ')}">Otros títulos</small>
+                        </a>
+                        <span class="text-muted small">
+                            <span th:text="${piece.year} ?: 'año desconocido'">1830</span>
+                            <a class="btn btn-sm btn-outline-secondary ms-2" th:href="@{/piece/edit/{id}(id=${piece.id})}">Editar</a>
+                            <form class="d-inline" method="post" th:action="@{/piece/delete/{id}(id=${piece.id})}"
+                                  th:attr="onsubmit=|return confirm('¿Eliminar la obra?')|">
+                                <input type="hidden" name="composer" th:value="${composer.name}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+    </main>
+
+    <footer th:replace="~{fragments/menuFragment :: footer}"></footer>
+</body>
+</html>

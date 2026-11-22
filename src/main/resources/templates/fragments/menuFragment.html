@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Cabecera comun: titulo + menu. Se incluye en todas las paginas. -->
+    <div th:fragment="header">
+        <header class="bg-dark text-white text-center py-4">
+            <h1 class="h2 m-0">My Favourite Composers</h1>
+        </header>
+        <nav class="navbar navbar-expand-md navbar-dark bg-secondary">
+            <div class="container justify-content-center">
+                <ul class="navbar-nav flex-row flex-wrap gap-3">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/composers}">Compositores</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/allMusicalPieces}">Todas las obras</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/searchComposer}">Buscar compositor</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/searchMusicalPiece}">Buscar obra</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/composerCompare}">Comparar compositores</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/composer/add}">Añadir compositor</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/piece/add}">Añadir obra</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <footer th:fragment="footer" class="text-center text-muted py-3 border-top bg-white">
+        My Favourite Composers - Spring Boot + Thymeleaf + Bootstrap
+    </footer>
+</body>
+</html>
